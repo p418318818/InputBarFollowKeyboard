@@ -44,6 +44,11 @@
      *  要附加到的目标view
      */
     UIView *_mainView;
+    
+    /**
+     *  记录第一行的高度
+     */
+    CGFloat _oneHight;
 }
 
 
@@ -132,6 +137,13 @@
 }
 -(void)textViewDidChange:(UITextView *)textView
 {
+
+    //获取第一行的高度
+    if(_oneHight==0)
+    {
+        _oneHight = textView.frame.size.height;
+    }
+
     //让textview随行数自动改变自身的高度
     CGSize txtViewsize = _txtInput.contentSize;
     if (txtViewsize.height >= 90) {
