@@ -137,11 +137,14 @@
     if (txtViewsize.height >= 90) {
         return;
     }
-    
-    CGRect barRect = _viewInputBar.frame;
-    barRect.size.height = txtViewsize.height + 15;
-    barRect.origin.y = _keyboardOriginY - barRect.size.height;
-    _viewInputBar.frame = barRect;
+    //如果第一行就改变高度 会使textView的高度变小 造成字体下沉。 我的设备时ios9 iphone5 所以我判断了在第二行才改变高度 
+        if(txtViewsize.height>28)
+    {
+        CGRect barRect = _viewInputBar.frame;
+        barRect.size.height = txtViewsize.height + 15;
+        barRect.origin.y = _keyboardOriginY - barRect.size.height;
+        _viewInputBar.frame = barRect;
+    }
 }
 #pragma mark - keyboard notification
 -(void)keyboardShow:(NSNotification*)notification
