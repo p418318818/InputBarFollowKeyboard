@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef void (^endtextBlock)(UITextView *textEnum);
 @class YCInputBar;
+
 @protocol YCInputBarDelegate <NSObject>
 
 @required
@@ -33,10 +35,20 @@
  *  @param mainView 要附加到的view
  *  @param title    按钮的文字
  *  @param length   限制最大输入长度
- *
+ *  @param placeholder 提示语句
+ *  @param endtextBlock 确定按钮后执行的block
  *  @return 返回当前控件实例，
  */
--(YCInputBar*)initBar:(UIView*)mainView sendButtonTitle:(NSString*)title maxTextLength:(NSInteger)length;
+
+//类方法 
++(void)initBar:(UIView*)mainView sendButtonTitle:(NSString*)title maxTextLength:(NSInteger)length andPlaceholder:(NSString *)placeholder andBlock:(endtextBlock)endtextBlock;
+
+
+
+#pragma mark——————————————————以下方法已经在类方法中实现 不需要再实现.
+
+//对象方法
+-(YCInputBar*)initBar:(UIView*)mainView sendButtonTitle:(NSString*)title maxTextLength:(NSInteger)length andPlaceholder:(NSString *)placeholder andBlock:(endtextBlock)endtextBlock;
 
 /**
  *  调用键盘
@@ -48,10 +60,5 @@
  */
 -(void)RemoveSelf;
 
-@property (nonatomic,strong) id <YCInputBarDelegate> delegate;
 
-/**
- *  默认显示的字符
- */
-@property (nonatomic,copy) NSString *placeholder;
 @end
