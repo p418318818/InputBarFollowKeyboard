@@ -10,7 +10,7 @@
 #import "YCInputBar.h"
 
 @interface KbViewController ()
-@property (nonatomic,strong) YCInputBar *bar;
+
 @end
 
 @implementation KbViewController
@@ -18,17 +18,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    //注：initBar参数，如果当前有navigationController，那么这里应该传self.navigationController.view
-    _bar = [[YCInputBar alloc] initBar:self.view sendButtonTitle:@"发表" maxTextLength:30];
-    _bar.placeholder = @"说点什么...";
-    _bar.delegate = self;
+
+
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
-    if (_bar) {
-        [_bar RemoveSelf];
-        _bar = nil;
-    }
+ 
 }
 
 - (void)didReceiveMemoryWarning {
@@ -36,7 +31,12 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)kbAction:(id)sender {
-    [_bar ShowKeyboard];
+  
+    [YCInputBar initBar:self.view sendButtonTitle:@"发表" maxTextLength:500 andPlaceholder:@"说点啥" andBlock:^(UITextView *textEnum) {
+        
+        NSLog(@"%@",textEnum.text);
+        
+    }];
 }
 #pragma mark - YCBar delegate
 -(BOOL)SendButtonClick:(UITextView *)textView
