@@ -10,7 +10,7 @@
 #import "UITextViewPlaceholder.h"
 #define screenRect [UIScreen mainScreen].bounds
 
-
+YCInputBar *bar;
 @implementation YCInputBar{
     /**
      *  附加在键盘上方的view
@@ -49,15 +49,21 @@
      *  记录第一行的高度
      */
     CGFloat _oneHight;
+    
+    /**
+     *  确认按钮执行的block
+     */
+    endtextBlock _endBlock;
 }
 
 
--(YCInputBar*)initBar:(UIView *)mainView sendButtonTitle:(NSString *)title maxTextLength:(NSInteger)length
+-(YCInputBar*)initBar:(UIView*)mainView sendButtonTitle:(NSString*)title maxTextLength:(NSInteger)length andPlaceholder:(NSString *)placeholder andBlock:(endtextBlock)endtextBlock
 {
     if (self = [super init]) {
         
-        _mainView = mainView;
+        _mainView  = mainView;
         _maxLength = length;
+        _endBlock  = endtextBlock;
         
         //frame隐藏在屏幕下方
         _viewInputBar = [[UIView alloc] initWithFrame:CGRectMake(0, screenRect.size.height, screenRect.size.width, 44)];
@@ -83,6 +89,8 @@
         
         [mainView addSubview:_viewInputBar];
         
+        _txtInput.placeholder = placeholder;
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardShow:) name:UIKeyboardWillShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardHide:) name:UIKeyboardWillHideNotification object:nil];
     }
@@ -98,29 +106,30 @@
 {
     [_viewInputBar removeFromSuperview];
     _viewInputBar = nil;
+    bar=nil;
 }
 #pragma mark - private function
 -(void)sendBtnClick
 {
     //主view那边判断完再隐藏键盘
-    BOOL b = [self.delegate SendButtonClick:_txtInput];
-    if (b) {
-        //        [self.txtInput resignFirstResponder];
+
+        //执行block
+        _endBlock(_txtInput);
+    
         [self hideBtnClick];
         
         _txtInput.text = nil;
         
         _viewInputBar.frame = CGRectMake(0, screenRect.size.height, screenRect.size.width, 44);
-        
-    }
+    
 }
 -(void)hideBtnClick
 {
+    //清除对象
     [_txtInput resignFirstResponder];
+    [self RemoveSelf];
     
-    if ([self.delegate respondsToSelector:@selector(WhenHide)]) {
-        [self.delegate WhenHide];
-    }
+    
 }
 #pragma mark - textView delegate
 -(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -209,17 +218,27 @@
     [_viewInputBar setFrame:inputRect];
 }
 
-#pragma mark - setPropery
--(void)setPlaceholder:(NSString *)placeholder
-{
-    _placeholder = placeholder;
-    _txtInput.placeholder = placeholder;
-}
+
 #pragma mark -
 -(void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
+    NSLog(@"释放了");
+}
+
+
+
++(void)initBar:(UIView*)mainView sendButtonTitle:(NSString*)title maxTextLength:(NSInteger)length andPlaceholder:(NSString *)placeholder andBlock:(endtextBlock)endtextBlock
+{
+
+    if(bar==nil)
+    {
+    bar = [[YCInputBar alloc]initBar:mainView sendButtonTitle:title maxTextLength:length andPlaceholder:placeholder andBlock:endtextBlock];
+    }
+    
+    [bar ShowKeyboard];
 }
 
 @end
